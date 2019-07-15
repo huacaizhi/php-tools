@@ -1,0 +1,23 @@
+{
+    "name": "huacaizhi/php-tools",
+    "description": "Some Library in PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "huacaizhi",
+            "email": "huacaizhi@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "HuaCaiZhi\\PhpTools\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "tests/"
+        }
+    },
+    "require": {}
+}
