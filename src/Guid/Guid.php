@@ -6,6 +6,7 @@
  * Date: 2019/7/15
  * Time: 19:44
  */
+namespace HuaCaiZhi\PhpTools\Guid;
 
 class Guid
 {

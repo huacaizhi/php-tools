@@ -6,6 +6,7 @@
  * Date: 2019/7/15
  * Time: 19:54
  */
+namespace HuaCaiZhi\PhpTools\Http;
 
 class Request
 {
