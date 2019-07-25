@@ -19,7 +19,7 @@ class Request
     public static function getRequestUrl()
     {
         if (strpos(php_sapi_name(), 'cli') !== false) {
-            return realpath(__FILE__);
+            return 'cli';
         }
         if (isset($_SERVER["REQUEST_SCHEME"])
             && isset($_SERVER["SERVER_NAME"])
