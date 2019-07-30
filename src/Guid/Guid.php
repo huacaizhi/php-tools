@@ -12,24 +12,34 @@ class Guid
 {
     /**
      * 显示样式:
-     * 1.原样
-     * 2.去掉下划线
+     * 1.原样(小写)
+     * 2.原样(大写)
+     * 3.去掉下划线
      *
      */
     const ORIGINAL = 1;
-    const RM_UNDERLINE = 2;
+    const ORIGINAL_UPPER = 2;
+    const RM_UNDERLINE = 3;
+
+    public static $guidModeArray = array(
+        self::ORIGINAL,
+        self::ORIGINAL_UPPER,
+        self::RM_UNDERLINE,
+    );
+
     /**
      * Create Guid
      *
+     * @param int $mode
      * @return string
      */
-    public static function guid()
+    public static function guid($mode = self::ORIGINAL)
     {
         if (function_exists('com_create_guid')) {
-            return com_create_guid();
+            return self::guidMode(trim(com_create_guid(), '{}'), $mode);
         } else {
             mt_srand((double)microtime() * 10000);//optional for php 4.2.0 and up.
-            $charid = strtoupper(md5(uniqid(rand(), true)));
+            $charid = md5(uniqid(rand(), true));
             $hyphen = chr(45);// "-"
             $uuid = substr($charid, 0, 8) . $hyphen
                 . substr($charid, 8, 4) . $hyphen
@@ -37,7 +47,74 @@ class Guid
                 . substr($charid, 16, 4) . $hyphen
                 . substr($charid, 20, 12);
 
-            return $uuid;
+            return self::guidMode($uuid, $mode);
         }
+    }
+
+    /**
+     * format guid
+     *
+     * @param int $mode
+     * @param string $guid
+     * @return string $guid
+     */
+    private static function guidMode($guid, $mode = self::ORIGINAL)
+    {
+        if (empty($mode) || !in_array($mode, self::$guidModeArray)) {
+            $mode = self::ORIGINAL;
+        }
+        if ($mode == self::ORIGINAL) {
+            return $guid;
+        } elseif ($mode == self::ORIGINAL_UPPER) {
+            return strtoupper($guid);
+        } elseif ($mode == self::RM_UNDERLINE) {
+            return str_ireplace("-", "", $guid);
+        }
+
+        return $guid;
+    }
+
+    /**
+     * Returns a GUIDv4 string
+     *
+     * Uses the best cryptographically secure method
+     * for all supported pltforms with fallback to an older,
+     * less secure version.
+     *
+     * @param bool $trim
+     * @return string
+     */
+    public static function GUIDv4($trim = true)
+    {
+        // Windows
+        if (function_exists('com_create_guid') === true) {
+            if ($trim === true)
+                return trim(com_create_guid(), '{}');
+            else
+                return com_create_guid();
+        }
+
+        // OSX/Linux
+        if (function_exists('openssl_random_pseudo_bytes') === true) {
+            $data = openssl_random_pseudo_bytes(16);
+            $data[6] = chr(ord($data[6]) & 0x0f | 0x40);    // set version to 0100
+            $data[8] = chr(ord($data[8]) & 0x3f | 0x80);    // set bits 6-7 to 10
+            return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+        }
+
+        // Fallback (PHP 4.2+)
+        mt_srand((double)microtime() * 10000);
+        $charid = strtolower(md5(uniqid(rand(), true)));
+        $hyphen = chr(45);                  // "-"
+        $lbrace = $trim ? "" : chr(123);    // "{"
+        $rbrace = $trim ? "" : chr(125);    // "}"
+        $guidv4 = $lbrace .
+            substr($charid, 0, 8) . $hyphen .
+            substr($charid, 8, 4) . $hyphen .
+            substr($charid, 12, 4) . $hyphen .
+            substr($charid, 16, 4) . $hyphen .
+            substr($charid, 20, 12) .
+            $rbrace;
+        return $guidv4;
     }
 }
