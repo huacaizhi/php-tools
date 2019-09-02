@@ -6,6 +6,7 @@
 
 #### `Guid`
 > `guid`创建一个 Guid
+
 > `GUIDv4`创建一个 Guidv4
 
 
